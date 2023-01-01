@@ -16,6 +16,7 @@ import com.pcc.carrental.response.CarModelDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class CarServiceImpl implements CarService {
     private CarModelManager carModelManager;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Long createCarModel(CreateCarModelRequest request) {
         CarModel carModel = new CarModel();
         carModel.setBrand(request.getBrand());
@@ -36,6 +38,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Long createCar(CreateCarRequest request) {
         checkModel(request.getCarModelId());
         Car car = new Car();

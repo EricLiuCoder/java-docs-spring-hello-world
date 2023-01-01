@@ -6,6 +6,8 @@ import com.pcc.carrental.response.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -13,6 +15,7 @@ public class UserServiceImpl implements UserService {
     private UserManager userManager;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Long createUser(CreateUserRequest request) {
         return userManager.newUser(request);
     }

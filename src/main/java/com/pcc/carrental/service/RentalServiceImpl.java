@@ -2,6 +2,7 @@ package com.pcc.carrental.service;
 
 import com.pcc.carrental.exception.CarRentalException;
 import com.pcc.carrental.manager.CarManager;
+import com.pcc.carrental.manager.RentalHistoryManager;
 import com.pcc.carrental.manager.RentalTransactionManager;
 import com.pcc.carrental.model.RentalTransaction;
 import com.pcc.carrental.model.enums.RentalTransactionStatus;
@@ -22,8 +23,11 @@ public class RentalServiceImpl implements RentalService{
     private CarManager carManager;
     @Autowired
     private RentalTransactionManager rentalTransactionManager;
+    @Autowired
+    private RentalHistoryManager rentalHistoryManager;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Long newTransaction(RentalTransactionRequest request) {
         return checkAndBook(request);
     }
@@ -35,7 +39,6 @@ public class RentalServiceImpl implements RentalService{
                 .toRentalTransactionDTO(rentalTransactionManager.findById(trxId));
     }
 
-    @Transactional(rollbackOn = Exception.class)
     private Long checkAndBook(RentalTransactionRequest request) {
         Long modelId = request.getCarModelId();
         if (!carManager.checkCarInStockAvailable(modelId)) {
@@ -57,6 +60,7 @@ public class RentalServiceImpl implements RentalService{
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void updateTransaction(UpdateRentalTransactionRequest request) {
         Long trxId = request.getId();
         checkTransaction(trxId);
@@ -75,6 +79,10 @@ public class RentalServiceImpl implements RentalService{
             default: throw CarRentalException.illegalAction();
         }
         rentalTransaction.setTrxStatus(targetStatus.name());
+
+        if (RentalTransactionStatus.RETURNED.equals(targetStatus)) {
+            rentalHistoryManager.save(rentalTransaction);
+        }
 
         rentalTransactionManager.save(rentalTransaction);
     }
