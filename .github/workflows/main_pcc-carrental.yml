@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'pcc-carrental'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8D29FDB183AC4CAB99F73F3CD721F4AC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_958B544750A149D0ACD97E1EDFB9E33D }}
           package: '*.jar'
